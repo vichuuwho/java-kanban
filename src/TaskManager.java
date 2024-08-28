@@ -6,22 +6,22 @@ public class TaskManager {
     static HashMap<Integer, Epic> epics = new HashMap<>();
     private static Integer number = 0;
 
-    public static void addTask(Task task) { // добавить задачи
+    public void addTask(Task task) { // добавить задачи
         number = setNumber(number);
         tasks.put(number, task);
     }
 
-    public static void addSubtask(SubTask subTask) {
+    public void addSubtask(SubTask subTask) {
         number = setNumber(number);
         subtasks.put(number, subTask);
     }
 
-    public static void addEpic(Epic epic) {
+    public void addEpic(Epic epic) {
         number = setNumber(number);
         epics.put(number, epic);
     }
 
-    public static void printTasks() { // Вывести все задачи
+    public void printTasks() { // Вывести все задачи
 
         if (tasks != null) {
             System.out.println(tasks);
@@ -34,13 +34,13 @@ public class TaskManager {
         }
     }
 
-    public static void removeAllTasks() {
+    public void removeAllTasks() {
         tasks.clear();
         subtasks.clear();
         epics.clear();
     }
 
-    public static Object getByIndex(int number) {
+    public Object getByIndex(int number) {
         if (tasks.containsKey(number)) {
             return tasks.get(number);
         } else if (subtasks.containsKey(number)) {
@@ -56,7 +56,7 @@ public class TaskManager {
         return ++number;
     }
 
-    public static void updateTask(Task task) {
+    public void updateTask(Task task) {
 
         if (task.getClass() == Task.class) {
             tasks.put(task.getNumber(), task);
