@@ -1,19 +1,9 @@
 public class SubTask extends Task {
+    private int number;
 
-    private String name;
-    private String description;
-    private Status status;
-
-    public SubTask(String name, String description, Status status) {
+    public SubTask(String name, String description, Status status, int number) {
         super(name, description, status);
+        this.number = number;
     }
 
-    @Override
-    public String toString() {
-        return "Subtask{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
-    }
 }

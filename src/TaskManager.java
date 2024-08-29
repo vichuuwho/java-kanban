@@ -1,12 +1,12 @@
 import java.util.HashMap;
 
 public class TaskManager {
-    static HashMap<Integer, Task> tasks = new HashMap<>();
-    static HashMap<Integer, SubTask> subtasks = new HashMap<>();
-    static HashMap<Integer, Epic> epics = new HashMap<>();
+    private HashMap<Integer, Task> tasks = new HashMap<>();
+    private HashMap<Integer, SubTask> subtasks = new HashMap<>();
+    private HashMap<Integer, Epic> epics = new HashMap<>();
     private static Integer number = 0;
 
-    public void addTask(Task task) { // добавить задачи
+    public void addTask(Task task) {
         number = setNumber(number);
         tasks.put(number, task);
     }
@@ -14,6 +14,7 @@ public class TaskManager {
     public void addSubtask(SubTask subTask) {
         number = setNumber(number);
         subtasks.put(number, subTask);
+        epics.put(subTask.getNumber(), epics.addSubTasks(number));
     }
 
     public void addEpic(Epic epic) {
@@ -21,24 +22,32 @@ public class TaskManager {
         epics.put(number, epic);
     }
 
-    public void printTasks() { // Вывести все задачи
-
+    public Object printTasks() {
         if (tasks != null) {
-            System.out.println(tasks);
+            return tasks;
         }
         if (subtasks != null) {
-            System.out.println(subtasks);
+            return subtasks;
         }
         if (epics != null) {
-            System.out.println(epics);
+            return epics;
         }
+        return null;
     }
 
     public void removeAllTasks() {
         tasks.clear();
-        subtasks.clear();
-        epics.clear();
     }
+
+    public void removeAllSubTasks() {
+        subtasks.clear();
+    }
+
+    public void removeAllEpics() {
+        epics.clear();
+        subtasks.clear();
+    }
+
 
     public Object getByIndex(int number) {
         if (tasks.containsKey(number)) {
@@ -62,27 +71,18 @@ public class TaskManager {
             tasks.put(task.getNumber(), task);
         } else if (task.getClass().equals(SubTask.class)) {
             subtasks.put(task.getNumber(), (SubTask) task);
-        } else if (task.getClass().equals(Epic.class)) {
-            boolean isNew = false;
-            boolean isDone = false;
-            epics.put(task.getNumber(), (Epic) task);
-            for (SubTask subTask : ((Epic) task).getSubTasks()) {
-                if (subTask.getStatus() != Status.NEW) {
-                    isNew = false;
-                } else {
-                    isNew = true;
-                }
-            }
-            for (SubTask subTask : ((Epic) task).getSubTasks()) {
-                if (subTask.getStatus() != Status.DONE) {
-                    isDone = false;
-                } else {
-                    isDone = true;
-                }
-            }
-            if (isNew || epics.get(task.getNumber()) == null) {
+            if (isNew(epics.get(task)) || epics.get(task.getNumber()) == null) {
                 epics.get(task.getNumber()).setStatus(Status.NEW);
-            } else if (isDone) {
+            } else if (isDone(epics.get(task))) {
+                epics.get(task.getNumber()).setStatus(Status.DONE);
+            } else {
+                epics.get(task.getNumber()).setStatus(Status.IN_PROGRESS);
+            }
+        } else if (task.getClass().equals(Epic.class)) {
+            epics.put(task.getNumber(), (Epic) task);
+            if (isNew(epics.get(task)) || epics.get(task.getNumber()) == null) {
+                epics.get(task.getNumber()).setStatus(Status.NEW);
+            } else if (isDone(epics.get(task))) {
                 epics.get(task.getNumber()).setStatus(Status.DONE);
             } else {
                 epics.get(task.getNumber()).setStatus(Status.IN_PROGRESS);
@@ -90,16 +90,43 @@ public class TaskManager {
         }
     }
 
+    public boolean isNew(Epic epic) {
+        boolean isNew = false;
+        for (Integer subTask : epic.getSubTasks()) {
+            if (epics.get(subTask).getStatus() != Status.NEW) {
+                return isNew = false;
+            } else {
+                return isNew = true;
+            }
+        }
+        return isNew;
+    }
+
+    public boolean isDone(Epic epic) {
+        boolean isDone = false;
+        for (Integer subTask : epic.getSubTasks()) {
+            if (epics.get(subTask).getStatus() != Status.DONE) {
+                return isDone = false;
+            } else {
+                return isDone = true;
+            }
+        }
+        return isDone;
+    }
+
     public int getNumber() {
         return number;
     }
 
-    public Object removeTask(int number) { // удалить все задачи
+    public Object removeTask(int number) {
         if (tasks.containsKey(number)) {
             return tasks.remove(number);
         } else if (subtasks.containsKey(number)) {
             return subtasks.remove(number);
         } else if (epics.containsKey(number)) {
+            for (Integer subTask : epics.get(number).getSubTasks()) {
+                epics.remove(subTask);
+            }
             return epics.remove(number);
         } else {
             return null;
