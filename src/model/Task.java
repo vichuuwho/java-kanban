@@ -1,3 +1,7 @@
+package model;
+
+import java.util.Objects;
+
 public class Task {
     private String name;
     private String description;
@@ -32,10 +36,35 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "model.Task{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 '}';
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return number == task.number;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(number);
     }
 }

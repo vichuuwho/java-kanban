@@ -1,3 +1,10 @@
+package service;
+
+import model.Epic;
+import model.Status;
+import model.SubTask;
+import model.Task;
+
 import java.util.HashMap;
 
 public class TaskManager {
@@ -6,20 +13,32 @@ public class TaskManager {
     private HashMap<Integer, Epic> epics = new HashMap<>();
     private static Integer number = 0;
 
-    public void addTask(Task task) {
+    public Task addTask(Task task) {
         number = setNumber(number);
         tasks.put(number, task);
+        return task;
     }
 
-    public void addSubtask(SubTask subTask) {
-        number = setNumber(number);
+    public SubTask addSubtask(SubTask subTask) {
+        subTask.setId(number++);
         subtasks.put(number, subTask);
-        epics.put(subTask.getNumber(), epics.addSubTasks(number));
+        Epic epic = epics.get(subTask.getEpic().getNumber());
+        epic.addSubTasks(subTask.getNumber());
+        if (isNew(epics.get(subTask)) || epics.get(subTask.getNumber()) == null) {
+            epics.get(subTask.getNumber()).setStatus(Status.NEW);
+        } else if (isDone(epics.get(subTask))) {
+            epics.get(subTask.getNumber()).setStatus(Status.DONE);
+        } else {
+            epics.get(subTask.getNumber()).setStatus(Status.IN_PROGRESS);
+        }
+        return subTask;
     }
 
-    public void addEpic(Epic epic) {
+    public Epic addEpic(Epic epic) {
         number = setNumber(number);
+        epic.setStatus(Status.NEW);
         epics.put(number, epic);
+        return epic;
     }
 
     public Object printTasks() {
@@ -68,8 +87,20 @@ public class TaskManager {
     public void updateTask(Task task) {
 
         if (task.getClass() == Task.class) {
+            Task saved = tasks.get(task.getNumber());
+            if (saved == null) {
+                return;
+            }
+            saved.setName(task.getName());
+            saved.setDescription(task.getDescription());
             tasks.put(task.getNumber(), task);
         } else if (task.getClass().equals(SubTask.class)) {
+            SubTask saved = subtasks.get(task.getNumber());
+            if (saved == null) {
+                return;
+            }
+            saved.setName(task.getName());
+            saved.setDescription(task.getDescription());
             subtasks.put(task.getNumber(), (SubTask) task);
             if (isNew(epics.get(task)) || epics.get(task.getNumber()) == null) {
                 epics.get(task.getNumber()).setStatus(Status.NEW);
@@ -79,6 +110,12 @@ public class TaskManager {
                 epics.get(task.getNumber()).setStatus(Status.IN_PROGRESS);
             }
         } else if (task.getClass().equals(Epic.class)) {
+            Epic saved = epics.get(task.getNumber());
+            if (saved == null) {
+                return;
+            }
+            saved.setName(task.getName());
+            saved.setDescription(task.getDescription());
             epics.put(task.getNumber(), (Epic) task);
             if (isNew(epics.get(task)) || epics.get(task.getNumber()) == null) {
                 epics.get(task.getNumber()).setStatus(Status.NEW);
