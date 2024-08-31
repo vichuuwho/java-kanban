@@ -15,7 +15,6 @@ public class TaskManager {
     private Integer number = 1;
 
     public Task addTask(Task task) {
-        //number = setNumber(number);
         task.setNumber(number++);
         tasks.put(number, task);
         return task;
@@ -23,7 +22,6 @@ public class TaskManager {
 
 
     public SubTask addSubTask(SubTask subtask) {
-        //number = setNumber(number);
         subtask.setNumber(number++);
         subtasks.put(subtask.getNumber(), subtask);
         whichStatus(epics.get(subtask.getEpicNumber()));
@@ -31,7 +29,6 @@ public class TaskManager {
     }
 
     public Epic addEpic(Epic epic) {
-        //number = setNumber(number);
         epic.setNumber(number++);
         epics.put(epic.getNumber(), epic);
         return epic;
@@ -89,10 +86,6 @@ public class TaskManager {
             return null;
         }
     }
-
-    /*private int setNumber(int number) {
-        return ++number;
-    }*/
 
     public void updateTask(Task task) {
         tasks.put(task.getNumber(), task);
